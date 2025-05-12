@@ -54,6 +54,7 @@ jobs:
     steps:
       - name: Disable crash dialog
         run: |
+          tar --help
           reg add "HKCU\SOFTWARE\Microsoft\Windows\Windows Error Reporting" `
             /v DontShowUI `
             /t REG_DWORD `
