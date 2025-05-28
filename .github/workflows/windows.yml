@@ -220,6 +220,7 @@ jobs:
             -DMRN_GROONGA_NORMALIZER_MYSQL_EMBED=${{ matrix.embed || 'OFF' }} ^
             -DGRN_WITH_MRUBY=ON ^
             -DGRN_WITH_WINDOWS_BACK_TRACE=OFF ^
+            -DINSTALL_RUNTIME_DEPENDENCIES_DEFAULT=OFF ^
             -DGRN_WITH_XSIMD=no || exit /B
       - name: Install
         shell: cmd
