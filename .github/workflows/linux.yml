@@ -259,6 +259,26 @@ jobs:
             if [ ${exit_status} -eq 0 ]; then
               break
             fi
+            if [ "${PACKAGE_TYPE}" = "yum" ] && [[ "${{ matrix.package }}" == "mysql-community-"*  ]]; then
+              export mysql_community_version=$(
+                git ls-remote --tags https://github.com/mysql/mysql-server | \
+                  grep -F "mysql-$(echo "${{ matrix.package }}" | grep -o '[0-9.]*')" | \
+                  awk '{print $2}' | \
+                  sed 's|refs/tags/mysql-||' | \
+                  sort -V | \
+                  tail -1
+              )
+            elif [ "${PACKAGE_TYPE}" = "yum" ] && [[ "${{ matrix.package }}" == "mariadb-"*  ]]; then
+              export mariadb_version=$(
+                git ls-remote --tags https://github.com/MariaDB/server | \
+                  grep -v '{}' | \
+                  grep -F "${{ matrix.package }}" | \
+                  awk '{print $2}' | \
+                  sed 's|refs/tags/mariadb-||' | \
+                  sort -V | \
+                  tail -1
+              )
+            fi
           done
           rake docker:push || :
           exit ${exit_status}
