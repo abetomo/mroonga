@@ -45,6 +45,7 @@ jobs:
           - mariadb-release: "11.4"
             use-main: "yes"
             embed: "ON"
+          - mariadb-release: "11.8"
     env:
       PACKAGE_PLATFORM: "winx64"
       VC_ARCHITECTURE: "x64"
