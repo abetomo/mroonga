@@ -848,25 +848,14 @@ using TABLE_LIST = Table_ref;
 #  define MRN_HAVE_UDF_METADATA
 #endif
 
-#ifdef MRN_MARIADB_P
-#  define MRN_ERROR_CANCEL ER_STATEMENT_TIMEOUT
-#else
-#  define MRN_ERROR_CANCEL ER_QUERY_TIMEOUT
-#endif
-
-#ifdef MRN_ERROR_CANCEL
-#  define MRN_SET_MESSAGE_FROM_CTX(ctx, error_code)                            \
-    do {                                                                       \
-      if ((ctx)->rc == GRN_CANCEL) {                                           \
-        my_error(MRN_ERROR_CANCEL, MYF(0));                                    \
-      } else {                                                                 \
-        my_message((error_code), (ctx)->errbuf, MYF(0));                       \
-      }                                                                        \
-    } while (false)
-#else
-#  define MRN_SET_MESSAGE_FROM_CTX(ctx, error_code)                            \
-    my_message(error_code, ctx->errbuf, MYF(0))
-#endif
+#define MRN_SET_MESSAGE_FROM_CTX(ctx, error_code)                              \
+  do {                                                                         \
+    if ((ctx)->rc == GRN_CANCEL) {                                             \
+      current_thd->send_kill_message();                                        \
+    } else {                                                                   \
+      my_message((error_code), (ctx)->errbuf, MYF(0));                         \
+    }                                                                          \
+  } while (false)
 
 #if defined(MRN_MARIADB_P) &&                                                  \
   ((MYSQL_VERSION_ID >= 100619 && MYSQL_VERSION_ID < 100700) ||                \
