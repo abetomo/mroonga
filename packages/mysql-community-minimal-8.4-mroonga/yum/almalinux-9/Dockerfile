@@ -15,6 +15,12 @@ RUN \
     https://packages.groonga.org/almalinux/9/groonga-release-latest.noarch.rpm \
     https://repo.mysql.com/mysql84-community-release-el9.rpm \
     https://apache.jfrog.io/artifactory/arrow/almalinux/$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/apache-arrow-release-latest.rpm && \
+  dnf config-manager \
+    --set-enabled 'mysql-8.4-lts-community*','mysql-tools-8.4-lts-community*' && \
+  if dnf repolist --all | grep -q '^mysql-9\.7-lts-community'; then \
+    dnf config-manager \
+      --set-disabled 'mysql-9.7-lts-community*','mysql-tools-9.7-lts-community*'; \
+  fi && \
   dnf install -y ${quiet} \
     mysql-community-devel && \
   dnf install --enablerepo=crb -y ${quiet} \
@@ -30,6 +36,7 @@ RUN \
     ninja-build \
     pkgconfig \
     rpm-build \
+    systemd-devel \
     wget \
     which && \
   dnf clean ${quiet} all

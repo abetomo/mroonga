@@ -94,6 +94,10 @@ REPO
     # So, we need to enable it manually
     if [ "${mysql_version}" = "8.4" ]; then
       sudo ${DNF} config-manager --set-enabled mysql-8.4-lts-community,mysql-tools-8.4-lts-community
+      if dnf repolist --all | grep -q '^mysql-9\.7-lts-community'; then
+        sudo ${DNF} config-manager \
+          --set-disabled 'mysql-9.7-lts-community*','mysql-tools-9.7-lts-community*'
+      fi
     fi
     ;;
   percona-*)

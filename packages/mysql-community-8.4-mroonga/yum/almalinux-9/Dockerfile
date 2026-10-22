@@ -17,8 +17,10 @@ RUN \
     https://apache.jfrog.io/artifactory/arrow/almalinux/$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/apache-arrow-release-latest.rpm && \
   dnf config-manager \
     --set-enabled 'mysql-8.4-lts-community*','mysql-tools-8.4-lts-community*' && \
-  dnf config-manager \
-    --set-disabled 'mysql-9.7-lts-community*','mysql-tools-9.7-lts-community*' && \
+  if dnf repolist --all | grep -q '^mysql-9\.7-lts-community'; then \
+    dnf config-manager \
+      --set-disabled 'mysql-9.7-lts-community*','mysql-tools-9.7-lts-community*'; \
+  fi && \
   dnf builddep --enablerepo=crb -y ${quiet} mysql-community && \
   dnf download -y ${quiet} --source mysql-community && \
   dnf install --enablerepo=crb -y ${quiet} \
@@ -36,5 +38,6 @@ RUN \
     rpm-build \
     wget \
     which && \
-  dnf install -y ${quiet} mysql-community-devel && \
+  dnf install --disablerepo=appstream -y ${quiet} \
+    mysql-community-devel && \
   dnf clean ${quiet} all
